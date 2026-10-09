@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Avenya">
+  <rect width="32" height="32" rx="8" fill="#F7F1E8"/>
+  <path
+    d="M9.6 12.8C13.8 7.2 22.4 6.8 26.2 11.8"
+    fill="none"
+    stroke="#28684C"
+    stroke-width="2.15"
+    stroke-linecap="round"
+  />
+  <path
+    fill="#28684C"
+    fill-rule="evenodd"
+    d="M7.5 25.5 14.7 10.4h2.7l7.3 15.1h-3.5l-1.6-3.6h-7.2l-1.5 3.6zm5.5-6.4h6.3L16.05 12.8z"
+  />
+</svg>
