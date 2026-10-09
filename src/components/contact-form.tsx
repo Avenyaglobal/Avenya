@@ -7,7 +7,17 @@ import { cn } from "@/lib/utils";
 
 type Profile = "autonomo" | "particular" | "sociedad" | "residente" | "other";
 
-type Errors = Partial<Record<"name" | "email" | "message" | "gdpr", string>>;
+type Errors = Partial<Record<"name" | "email" | "message" | "gdpr" | "send", string>>;
+
+const PROFILE_ES: Record<Profile, string> = {
+  autonomo: "Autónomo",
+  particular: "Particular",
+  sociedad: "Sociedad",
+  residente: "No residente",
+  other: "Otra",
+};
+
+const INBOX = "avenyaglobal@gmail.com";
 
 export function ContactForm() {
   const { t } = useI18n();
@@ -31,16 +41,35 @@ export function ContactForm() {
     return next;
   }
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     const next = validate();
     setErrors(next);
     if (Object.keys(next).length) return;
     setSending(true);
-    window.setTimeout(() => {
-      setSending(false);
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${INBOX}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          profile: PROFILE_ES[profile],
+          message: message.trim(),
+          _subject: `Consulta web — ${PROFILE_ES[profile]} — ${name.trim()}`,
+          _template: "table",
+          _captcha: "false",
+          _replyto: email.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error("send");
       setDone(true);
-    }, 500);
+    } catch {
+      setErrors({ send: c.errors.send });
+    } finally {
+      setSending(false);
+    }
   }
 
   if (done) {
@@ -159,6 +188,7 @@ export function ContactForm() {
         <Button type="submit" size="lg" disabled={sending} className={cn("min-w-44")}>
           {sending ? c.sending : c.submit}
         </Button>
+        <FieldError>{errors.send}</FieldError>
       </div>
     </form>
   );
