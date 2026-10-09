@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { FieldError, Input, Label, Select, Textarea } from "@/components/ui/field";
 import { useI18n } from "@/lib/i18n";
@@ -20,7 +19,7 @@ const PROFILE_ES: Record<Profile, string> = {
 const INBOX = "avenyaglobal@gmail.com";
 
 export function ContactForm() {
-  const { t } = useI18n();
+  const { t, href } = useI18n();
   const c = t.contact;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -177,9 +176,9 @@ export function ContactForm() {
         />
         <span>
           {c.gdpr}{" "}
-          <Link to="/privacidad" className="text-forest underline-offset-4 hover:underline">
+          <a href={href("/privacidad")} className="text-forest underline-offset-4 hover:underline">
             {t.nav.privacy}
-          </Link>
+          </a>
           .
         </span>
       </label>

@@ -1,13 +1,7 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, type ReactNode } from "react";
+import { useRouterState, useNavigate } from "@tanstack/react-router";
 import { content, type Copy, type Lang } from "@/lib/content";
+import { langFromPath, localizePath, stripLocale } from "@/lib/locale";
 
 const STORAGE_KEY = "avenya-lang";
 
@@ -15,36 +9,42 @@ type I18nValue = {
   lang: Lang;
   t: Copy;
   setLang: (lang: Lang) => void;
+  href: (path: string) => string;
 };
 
 const I18nContext = createContext<I18nValue | null>(null);
 
-function readStoredLang(): Lang {
-  if (typeof window === "undefined") return "es";
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  return stored === "ru" || stored === "es" || stored === "uk" ? stored : "es";
-}
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("es");
-
-  useEffect(() => {
-    setLangState(readStoredLang());
-  }, []);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const lang = langFromPath(pathname);
 
   useEffect(() => {
     document.documentElement.lang = lang;
-    document.title = content[lang].metaTitle;
   }, [lang]);
 
-  const setLang = useCallback((next: Lang) => {
-    setLangState(next);
-    window.localStorage.setItem(STORAGE_KEY, next);
-  }, []);
+  const setLang = useCallback(
+    (next: Lang) => {
+      if (next === lang) return;
+      const y = window.scrollY;
+      window.localStorage.setItem(STORAGE_KEY, next);
+      const target = localizePath(next, stripLocale(pathname));
+      void navigate({ href: target, resetScroll: false });
+      const restore = () => window.scrollTo(0, y);
+      requestAnimationFrame(() => {
+        restore();
+        requestAnimationFrame(restore);
+      });
+      window.setTimeout(restore, 60);
+    },
+    [lang, navigate, pathname],
+  );
+
+  const href = useCallback((path: string) => localizePath(lang, path), [lang]);
 
   const value = useMemo<I18nValue>(
-    () => ({ lang, t: content[lang], setLang }),
-    [lang, setLang],
+    () => ({ lang, t: content[lang], setLang, href }),
+    [lang, setLang, href],
   );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;

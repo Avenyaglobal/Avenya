@@ -12,6 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AvisoLegalRouteImport } from './routes/aviso-legal'
 import { Route as PrivacidadRouteImport } from './routes/privacidad'
+import { Route as RuIndexRouteImport } from './routes/ru/index'
+import { Route as RuAvisoLegalRouteImport } from './routes/ru/aviso-legal'
+import { Route as RuPrivacidadRouteImport } from './routes/ru/privacidad'
+import { Route as UkIndexRouteImport } from './routes/uk/index'
+import { Route as UkAvisoLegalRouteImport } from './routes/uk/aviso-legal'
+import { Route as UkPrivacidadRouteImport } from './routes/uk/privacidad'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +34,117 @@ const PrivacidadRoute = PrivacidadRouteImport.update({
   path: '/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RuIndexRoute = RuIndexRouteImport.update({
+  id: '/ru/',
+  path: '/ru/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RuAvisoLegalRoute = RuAvisoLegalRouteImport.update({
+  id: '/ru/aviso-legal',
+  path: '/ru/aviso-legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RuPrivacidadRoute = RuPrivacidadRouteImport.update({
+  id: '/ru/privacidad',
+  path: '/ru/privacidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UkIndexRoute = UkIndexRouteImport.update({
+  id: '/uk/',
+  path: '/uk/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UkAvisoLegalRoute = UkAvisoLegalRouteImport.update({
+  id: '/uk/aviso-legal',
+  path: '/uk/aviso-legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UkPrivacidadRoute = UkPrivacidadRouteImport.update({
+  id: '/uk/privacidad',
+  path: '/uk/privacidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/privacidad': typeof PrivacidadRoute
+  '/ru/aviso-legal': typeof RuAvisoLegalRoute
+  '/ru/privacidad': typeof RuPrivacidadRoute
+  '/uk/aviso-legal': typeof UkAvisoLegalRoute
+  '/uk/privacidad': typeof UkPrivacidadRoute
+  '/ru/': typeof RuIndexRoute
+  '/uk/': typeof UkIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/privacidad': typeof PrivacidadRoute
+  '/ru/aviso-legal': typeof RuAvisoLegalRoute
+  '/ru/privacidad': typeof RuPrivacidadRoute
+  '/uk/aviso-legal': typeof UkAvisoLegalRoute
+  '/uk/privacidad': typeof UkPrivacidadRoute
+  '/ru': typeof RuIndexRoute
+  '/uk': typeof UkIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/aviso-legal': typeof AvisoLegalRoute
   '/privacidad': typeof PrivacidadRoute
+  '/ru/aviso-legal': typeof RuAvisoLegalRoute
+  '/ru/privacidad': typeof RuPrivacidadRoute
+  '/uk/aviso-legal': typeof UkAvisoLegalRoute
+  '/uk/privacidad': typeof UkPrivacidadRoute
+  '/ru/': typeof RuIndexRoute
+  '/uk/': typeof UkIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/aviso-legal' | '/privacidad'
+  fullPaths:
+    | '/'
+    | '/aviso-legal'
+    | '/privacidad'
+    | '/ru/aviso-legal'
+    | '/ru/privacidad'
+    | '/uk/aviso-legal'
+    | '/uk/privacidad'
+    | '/ru/'
+    | '/uk/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/aviso-legal' | '/privacidad'
-  id: '__root__' | '/' | '/aviso-legal' | '/privacidad'
+  to:
+    | '/'
+    | '/aviso-legal'
+    | '/privacidad'
+    | '/ru/aviso-legal'
+    | '/ru/privacidad'
+    | '/uk/aviso-legal'
+    | '/uk/privacidad'
+    | '/ru'
+    | '/uk'
+  id:
+    | '__root__'
+    | '/'
+    | '/aviso-legal'
+    | '/privacidad'
+    | '/ru/aviso-legal'
+    | '/ru/privacidad'
+    | '/uk/aviso-legal'
+    | '/uk/privacidad'
+    | '/ru/'
+    | '/uk/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AvisoLegalRoute: typeof AvisoLegalRoute
   PrivacidadRoute: typeof PrivacidadRoute
+  RuAvisoLegalRoute: typeof RuAvisoLegalRoute
+  RuPrivacidadRoute: typeof RuPrivacidadRoute
+  UkAvisoLegalRoute: typeof UkAvisoLegalRoute
+  UkPrivacidadRoute: typeof UkPrivacidadRoute
+  RuIndexRoute: typeof RuIndexRoute
+  UkIndexRoute: typeof UkIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +170,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ru/': {
+      id: '/ru/'
+      path: '/ru'
+      fullPath: '/ru/'
+      preLoaderRoute: typeof RuIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ru/aviso-legal': {
+      id: '/ru/aviso-legal'
+      path: '/ru/aviso-legal'
+      fullPath: '/ru/aviso-legal'
+      preLoaderRoute: typeof RuAvisoLegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ru/privacidad': {
+      id: '/ru/privacidad'
+      path: '/ru/privacidad'
+      fullPath: '/ru/privacidad'
+      preLoaderRoute: typeof RuPrivacidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/uk/': {
+      id: '/uk/'
+      path: '/uk'
+      fullPath: '/uk/'
+      preLoaderRoute: typeof UkIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/uk/aviso-legal': {
+      id: '/uk/aviso-legal'
+      path: '/uk/aviso-legal'
+      fullPath: '/uk/aviso-legal'
+      preLoaderRoute: typeof UkAvisoLegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/uk/privacidad': {
+      id: '/uk/privacidad'
+      path: '/uk/privacidad'
+      fullPath: '/uk/privacidad'
+      preLoaderRoute: typeof UkPrivacidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +219,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AvisoLegalRoute: AvisoLegalRoute,
   PrivacidadRoute: PrivacidadRoute,
+  RuAvisoLegalRoute: RuAvisoLegalRoute,
+  RuPrivacidadRoute: RuPrivacidadRoute,
+  UkAvisoLegalRoute: UkAvisoLegalRoute,
+  UkPrivacidadRoute: UkPrivacidadRoute,
+  RuIndexRoute: RuIndexRoute,
+  UkIndexRoute: UkIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

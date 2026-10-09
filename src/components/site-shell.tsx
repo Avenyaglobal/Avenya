@@ -1,18 +1,19 @@
-import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import type { Lang } from "@/lib/content";
+import { localizePath, stripLocale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+import { useRouterState } from "@tanstack/react-router";
 
 const NAV = [
-  { href: "/#servicios", key: "services" },
-  { href: "/#calendario", key: "calendar" },
-  { href: "/#enfoque", key: "approach" },
-  { href: "/#alicante", key: "alicante" },
-  { href: "/#faq", key: "faq" },
+  { path: "/#servicios", key: "services" },
+  { path: "/#calendario", key: "calendar" },
+  { path: "/#enfoque", key: "approach" },
+  { path: "/#alicante", key: "alicante" },
+  { path: "/#faq", key: "faq" },
 ] as const;
 
 export function SiteShell({ children }: { children: ReactNode }) {
@@ -39,7 +40,7 @@ function SkipLink() {
 }
 
 function Header() {
-  const { t, lang, setLang } = useI18n();
+  const { t, lang, setLang, href } = useI18n();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -56,8 +57,8 @@ function Header() {
         <nav className="hidden items-center gap-7 lg:flex" aria-label="Principal">
           {NAV.map((item) => (
             <a
-              key={item.href}
-              href={item.href}
+              key={item.path}
+              href={href(item.path)}
               className="text-sm text-ink-soft transition-colors duration-150 hover:text-ink"
             >
               {t.nav[item.key]}
@@ -67,7 +68,7 @@ function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <LangSwitch lang={lang} setLang={setLang} />
           <Button asChild size="sm" className="hidden sm:inline-flex">
-            <a href="/#contacto">{t.nav.cta}</a>
+            <a href={href("/#contacto")}>{t.nav.cta}</a>
           </Button>
           <button
             type="button"
@@ -91,8 +92,8 @@ function Header() {
         <nav className="flex flex-col gap-1 px-5 py-4 sm:px-8" aria-label="Móvil">
           {NAV.map((item) => (
             <a
-              key={item.href}
-              href={item.href}
+              key={item.path}
+              href={href(item.path)}
               onClick={() => setOpen(false)}
               className="flex min-h-11 items-center font-display text-2xl text-ink"
             >
@@ -100,7 +101,7 @@ function Header() {
             </a>
           ))}
           <a
-            href="/#contacto"
+            href={href("/#contacto")}
             onClick={() => setOpen(false)}
             className="mt-3 inline-flex h-12 items-center justify-center rounded-md bg-forest text-sm font-medium text-cream"
           >
@@ -119,6 +120,8 @@ function LangSwitch({
   lang: Lang;
   setLang: (lang: Lang) => void;
 }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const hrefFor = (code: Lang) => localizePath(code, stripLocale(pathname));
   return (
     <div
       className="flex h-10 items-center rounded-sm bg-cream-deep p-0.5 text-xs font-medium tracking-wide"
@@ -126,25 +129,28 @@ function LangSwitch({
       aria-label="Idioma"
     >
       {(["es", "ru", "uk"] as const).map((code) => (
-        <button
+        <a
           key={code}
-          type="button"
-          onClick={() => setLang(code)}
+          href={hrefFor(code)}
           className={cn(
             "inline-flex h-9 min-w-10 items-center justify-center rounded-xs px-2.5 uppercase transition-colors duration-150",
             lang === code ? "bg-paper text-forest" : "text-muted hover:text-ink",
           )}
-          aria-pressed={lang === code}
+          aria-current={lang === code ? "true" : undefined}
+          onClick={(event) => {
+            event.preventDefault();
+            setLang(code);
+          }}
         >
           {code === "uk" ? "UA" : code}
-        </button>
+        </a>
       ))}
     </div>
   );
 }
 
 function Footer() {
-  const { t } = useI18n();
+  const { t, href } = useI18n();
   const year = new Date().getFullYear();
   return (
     <footer className="bg-forest-deep text-cream">
@@ -159,8 +165,8 @@ function Footer() {
         <div className="flex flex-col gap-2 text-sm">
           {NAV.map((item) => (
             <a
-              key={item.href}
-              href={item.href}
+              key={item.path}
+              href={href(item.path)}
               className="min-h-10 inline-flex items-center text-cream/80 transition-colors hover:text-cream"
             >
               {t.nav[item.key]}
@@ -169,23 +175,23 @@ function Footer() {
         </div>
         <div className="flex flex-col gap-2 text-sm">
           <a
-            href="/#contacto"
+            href={href("/#contacto")}
             className="min-h-10 inline-flex items-center text-cream/80 transition-colors hover:text-cream"
           >
             {t.nav.contact}
           </a>
-          <Link
-            to="/aviso-legal"
+          <a
+            href={href("/aviso-legal")}
             className="min-h-10 inline-flex items-center text-cream/80 transition-colors hover:text-cream"
           >
             {t.nav.legal}
-          </Link>
-          <Link
-            to="/privacidad"
+          </a>
+          <a
+            href={href("/privacidad")}
             className="min-h-10 inline-flex items-center text-cream/80 transition-colors hover:text-cream"
           >
             {t.nav.privacy}
-          </Link>
+          </a>
           <a
             href="tel:+34695343196"
             className="min-h-10 inline-flex items-center text-cream/80 transition-colors hover:text-cream"

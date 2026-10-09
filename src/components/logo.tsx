@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 
 export function Logo({
   className,
@@ -8,9 +8,10 @@ export function Logo({
   className?: string;
   onClick?: () => void;
 }) {
+  const { href } = useI18n();
   return (
-    <Link
-      to="/"
+    <a
+      href={href("/")}
       onClick={onClick}
       className={cn(
         "group flex items-center gap-2.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest",
@@ -28,6 +29,6 @@ export function Logo({
       <span className="font-display text-2xl font-medium tracking-tight text-forest leading-none">
         Avenya
       </span>
-    </Link>
+    </a>
   );
 }

@@ -1,22 +1,15 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { LanguageProvider } from "@/lib/i18n";
+import { langFromPath } from "@/lib/locale";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
-
-const APP_NAME = "Avenya — Asesoría fiscal y contable en Alicante";
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: APP_NAME },
-      {
-        name: "description",
-        content:
-          "Asesoría fiscal y contable en Alicante. Autónomos, sociedades y no residentes. Atención en español y ruso.",
-      },
       { name: "theme-color", content: "#F7F1E8" },
     ],
     links: [
@@ -40,8 +33,10 @@ export const Route = createRootRoute({
 });
 
 function RootDocument() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const lang = langFromPath(pathname);
   return (
-    <html lang="es" className="antialiased" suppressHydrationWarning>
+    <html lang={lang} className="antialiased" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

@@ -237,44 +237,54 @@ function FaqBlock() {
 function ContactBlock() {
   const { t } = useI18n();
   const c = t.contact;
+  const address = c.aside.slice(0, 3);
+  const hours = c.aside.slice(3, 5);
+  const note = c.aside[5];
+  const actions = c.channels.filter((channel) => !channel.href.includes("avenyaglobal.com"));
+
   return (
-    <section id="contacto" className="scroll-mt-24 border-t border-line bg-cream-deep">
-      <div className="mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-2 lg:gap-16">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-eyebrow text-forest">
-            {c.eyebrow}
-          </p>
+    <section id="contacto" className="scroll-mt-24 border-t border-line bg-cream">
+      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
+        <div className="max-w-xl">
+          <p className="text-xs font-medium uppercase tracking-eyebrow text-forest">{c.eyebrow}</p>
           <h2 className="mt-4 font-display text-4xl font-medium leading-tight tracking-display text-ink sm:text-5xl">
             {c.title}
           </h2>
-          <p className="mt-4 max-w-md text-base leading-relaxed text-ink-soft">{c.lead}</p>
-          <div className="mt-10">
+          <p className="mt-4 text-base leading-relaxed text-ink-soft">{c.lead}</p>
+        </div>
+
+        <div className="mt-10 grid items-start gap-8 lg:mt-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)] lg:gap-12">
+          <div className="order-1 rounded-xl bg-paper p-6 shadow-[0_18px_50px_-28px_rgba(26,74,54,0.55)] ring-1 ring-forest/20 sm:p-8 lg:order-2 lg:p-10">
+            <ContactForm />
+          </div>
+
+          <aside className="order-2 lg:order-1">
             <p className="text-xs uppercase tracking-eyebrow text-muted">{c.asideTitle}</p>
-            <ul className="mt-3 space-y-2 text-sm">
-              {c.channels.map((channel) => {
+            <address className="mt-4 space-y-1 text-base not-italic leading-relaxed text-ink">
+              {address.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </address>
+            <p className="mt-5 text-sm font-medium text-ink">{hours.join(" · ")}</p>
+            {note ? <p className="mt-1 text-sm text-ink-soft">{note}</p> : null}
+            <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              {actions.map((channel) => {
                 const external = channel.href.startsWith("http");
                 return (
-                  <li key={channel.href}>
-                    <a
-                      href={channel.href}
-                      className="text-forest underline-offset-4 hover:underline"
-                      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-                    >
-                      {channel.label}
-                    </a>
-                  </li>
+                  <a
+                    key={channel.href}
+                    href={channel.href}
+                    className="inline-flex h-11 items-center justify-center rounded-sm bg-cream-deep px-4 text-sm font-medium text-forest transition-colors hover:bg-moss"
+                    {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+                  >
+                    {channel.label}
+                  </a>
                 );
               })}
-            </ul>
-            <ul className="mt-4 space-y-1.5 text-sm text-ink-soft">
-              {c.aside.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <div className="rounded-xl bg-cream p-6 shadow-[var(--shadow-border)] sm:p-8">
-          <ContactForm />
+            </div>
+          </aside>
         </div>
       </div>
     </section>

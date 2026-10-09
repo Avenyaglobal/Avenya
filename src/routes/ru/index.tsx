@@ -4,9 +4,9 @@ import { SiteShell } from "@/components/site-shell";
 import { loadHomeCalendar } from "@/lib/home-loader";
 import { seoHead } from "@/lib/seo";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/ru/")({
   loader: loadHomeCalendar,
-  head: () => seoHead("es", "home"),
+  head: () => seoHead("ru", "home"),
   component: Home,
 });
 

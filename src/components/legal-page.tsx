@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site-shell";
 import { useI18n } from "@/lib/i18n";
 
@@ -9,7 +8,7 @@ export function LegalPage({
 }: {
   kind: "legal" | "privacy";
 }) {
-  const { t } = useI18n();
+  const { t, href } = useI18n();
   const page = kind === "legal" ? t.legal : t.privacy;
 
   return (
@@ -31,12 +30,12 @@ export function LegalPage({
           ))}
         </div>
         <p className="mt-16">
-          <Link
-            to="/"
+          <a
+            href={href("/")}
             className="text-sm font-medium text-forest underline-offset-4 hover:underline"
           >
             ← Avenya
-          </Link>
+          </a>
         </p>
       </article>
     </SiteShell>

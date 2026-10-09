@@ -7,7 +7,7 @@ import type {
 import { cn } from "@/lib/utils";
 
 const fieldClass =
-  "w-full rounded-md bg-paper px-3.5 text-ink shadow-[var(--shadow-border)] placeholder:text-muted transition-[box-shadow] duration-150 ease-out hover:shadow-[var(--shadow-border-hover)] focus:outline-none focus-visible:shadow-[0_0_0_2px_var(--color-forest)]";
+  "w-full rounded-md bg-cream px-3.5 text-ink shadow-[var(--shadow-border)] placeholder:text-muted transition-[box-shadow] duration-150 ease-out hover:shadow-[var(--shadow-border-hover)] focus:outline-none focus-visible:shadow-[0_0_0_2px_var(--color-forest)]";
 
 export function Label({
   className,

@@ -163,7 +163,7 @@ export const content = {
       title: "Antes de escribirnos.",
       items: [
         {
-          q: "¿Trabajáis en ruso?",
+          q: "¿Trabajáis en español?",
           a: "Sí. El expediente puede llevarse en español, en ruso o en ucraniano. Los modelos y las notificaciones de Hacienda son en español; nosotros los traducimos y explicamos.",
         },
         {
