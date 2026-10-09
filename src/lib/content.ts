@@ -217,6 +217,7 @@ export const content = {
         email: "Indique un correo válido.",
         message: "Escriba un breve mensaje.",
         gdpr: "Hace falta aceptar la privacidad para enviar.",
+        send: "No se ha podido enviar. Escríbanos a avenyaglobal@gmail.com o llame al 695 343 196.",
       },
       asideTitle: "Despacho",
       channels: [
@@ -511,6 +512,7 @@ export const content = {
         email: "Укажите корректную почту.",
         message: "Напишите короткое сообщение.",
         gdpr: "Чтобы отправить, нужно принять политику конфиденциальности.",
+        send: "Не удалось отправить. Напишите на avenyaglobal@gmail.com или позвоните 695 343 196.",
       },
       asideTitle: "Кабинет",
       channels: [
@@ -805,6 +807,7 @@ export const content = {
         email: "Вкажіть коректну пошту.",
         message: "Напишіть коротке повідомлення.",
         gdpr: "Щоб надіслати, потрібно прийняти політику конфіденційності.",
+        send: "Не вдалося надіслати. Напишіть на avenyaglobal@gmail.com або зателефонуйте 695 343 196.",
       },
       asideTitle: "Кабінет",
       channels: [
