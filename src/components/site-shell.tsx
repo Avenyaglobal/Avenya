@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -52,8 +52,8 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line/80 bg-cream/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:h-[4.25rem] sm:px-8">
-        <Logo onClick={() => setOpen(false)} />
+      <div className="mx-auto flex h-16 w-full max-w-[90rem] items-center justify-between gap-4 px-4 sm:h-[4.5rem] sm:px-8 lg:px-10">
+        <Logo onClick={() => setOpen(false)} className="min-w-0" />
         <nav className="hidden items-center gap-7 lg:flex" aria-label="Principal">
           {NAV.map((item) => (
             <a
@@ -122,30 +122,85 @@ function LangSwitch({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const hrefFor = (code: Lang) => localizePath(code, stripLocale(pathname));
+  const [open, setOpen] = useState(false);
+  const codes = ["es", "ru", "uk"] as const;
+  const label = (code: Lang) => (code === "uk" ? "UA" : code.toUpperCase());
+  const name = (code: Lang) =>
+    code === "es" ? "Español" : code === "ru" ? "Русский" : "Українська";
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    window.addEventListener("scroll", close, { passive: true });
+    return () => window.removeEventListener("scroll", close);
+  }, [open]);
+
   return (
-    <div
-      className="flex h-10 items-center rounded-sm bg-cream-deep p-0.5 text-xs font-medium tracking-wide"
-      role="group"
-      aria-label="Idioma"
-    >
-      {(["es", "ru", "uk"] as const).map((code) => (
-        <a
-          key={code}
-          href={hrefFor(code)}
-          className={cn(
-            "inline-flex h-9 min-w-10 items-center justify-center rounded-xs px-2.5 uppercase transition-colors duration-150",
-            lang === code ? "bg-paper text-forest" : "text-muted hover:text-ink",
-          )}
-          aria-current={lang === code ? "true" : undefined}
-          onClick={(event) => {
-            event.preventDefault();
-            setLang(code);
-          }}
+    <>
+      <div className="relative lg:hidden">
+        <button
+          type="button"
+          className="inline-flex h-10 items-center gap-1 rounded-sm bg-cream-deep px-3 text-xs font-medium uppercase tracking-wide text-forest"
+          aria-expanded={open}
+          aria-haspopup="listbox"
+          aria-label="Idioma"
+          onClick={() => setOpen((v) => !v)}
         >
-          {code === "uk" ? "UA" : code}
-        </a>
-      ))}
-    </div>
+          {label(lang)}
+          <ChevronDown className={cn("size-3.5 transition-transform", open && "rotate-180")} />
+        </button>
+        {open ? (
+          <ul
+            role="listbox"
+            className="absolute right-0 top-full z-50 mt-2 min-w-36 overflow-hidden rounded-md bg-paper py-1 shadow-[var(--shadow-border)]"
+          >
+            {codes.map((code) => (
+              <li key={code}>
+                <a
+                  href={hrefFor(code)}
+                  role="option"
+                  aria-selected={lang === code}
+                  className={cn(
+                    "flex h-11 items-center px-3 text-sm",
+                    lang === code ? "bg-cream-deep text-forest" : "text-ink",
+                  )}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setOpen(false);
+                    setLang(code);
+                  }}
+                >
+                  {name(code)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+      <div
+        className="hidden h-10 items-center rounded-sm bg-cream-deep p-0.5 text-xs font-medium tracking-wide lg:flex"
+        role="group"
+        aria-label="Idioma"
+      >
+        {codes.map((code) => (
+          <a
+            key={code}
+            href={hrefFor(code)}
+            className={cn(
+              "inline-flex h-9 min-w-10 items-center justify-center rounded-xs px-2.5 uppercase transition-colors duration-150",
+              lang === code ? "bg-paper text-forest" : "text-muted hover:text-ink",
+            )}
+            aria-current={lang === code ? "true" : undefined}
+            onClick={(event) => {
+              event.preventDefault();
+              setLang(code);
+            }}
+          >
+            {label(code)}
+          </a>
+        ))}
+      </div>
+    </>
   );
 }
 
