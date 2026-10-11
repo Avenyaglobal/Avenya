@@ -14,7 +14,7 @@ export function Logo({
       href={href("/")}
       onClick={onClick}
       className={cn(
-        "group flex items-center gap-2.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest",
+        "group flex min-w-0 items-center gap-2.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-forest",
         className,
       )}
       aria-label="Avenya"
@@ -24,9 +24,9 @@ export function Logo({
         alt=""
         width={148}
         height={65}
-        className="h-9 w-auto"
+        className="h-8 w-auto shrink-0 sm:h-10"
       />
-      <span className="font-display text-2xl font-medium tracking-tight text-forest leading-none">
+      <span className="truncate font-display text-2xl font-medium tracking-tight text-forest leading-none sm:text-3xl">
         Avenya
       </span>
     </a>
