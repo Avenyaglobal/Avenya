@@ -16,7 +16,8 @@ const PROFILE_ES: Record<Profile, string> = {
   other: "Otra",
 };
 
-const INBOX = "34695343196";
+const EMAIL = "avenyaglobal@gmail.com";
+const WHATSAPP = "34695343196";
 
 function whatsappText(input: {
   name: string;
@@ -45,6 +46,8 @@ export function ContactForm() {
   const [message, setMessage] = useState("");
   const [gdpr, setGdpr] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
+  const [sending, setSending] = useState(false);
+  const [mailFailed, setMailFailed] = useState(false);
   const [done, setDone] = useState(false);
 
   function validate(): Errors {
@@ -56,24 +59,48 @@ export function ContactForm() {
     return next;
   }
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     const next = validate();
     setErrors(next);
     if (Object.keys(next).length) return;
-    const url = `https://wa.me/${INBOX}?text=${encodeURIComponent(
-      whatsappText({
-        name: name.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        profile: PROFILE_ES[profile],
-        message: message.trim(),
-      }),
-    )}`;
-    const opened = window.open(url, "_blank", "noopener,noreferrer");
-    if (!opened) window.location.href = url;
-    setDone(true);
+    setSending(true);
+    setMailFailed(false);
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          profile: PROFILE_ES[profile],
+          message: message.trim(),
+          _subject: `Consulta web — ${PROFILE_ES[profile]} — ${name.trim()}`,
+          _template: "table",
+          _captcha: "false",
+          _replyto: email.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error("send");
+      setDone(true);
+    } catch {
+      setMailFailed(true);
+      setErrors({ send: c.errors.send });
+    } finally {
+      setSending(false);
+    }
   }
+
+  const whatsappHref = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
+    whatsappText({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      profile: PROFILE_ES[profile],
+      message: message.trim(),
+    }),
+  )}`;
 
   if (done) {
     return (
@@ -188,9 +215,16 @@ export function ContactForm() {
       </label>
       <FieldError>{errors.gdpr}</FieldError>
       <div>
-        <Button type="submit" size="lg" className={cn("min-w-44")}>
-          {c.submit}
+        <Button type="submit" size="lg" disabled={sending} className={cn("min-w-44")}>
+          {sending ? c.sending : c.submit}
         </Button>
+        {mailFailed ? (
+          <Button asChild size="lg" variant="outline" className="mt-3">
+            <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+              {c.whatsapp}
+            </a>
+          </Button>
+        ) : null}
         <FieldError>{errors.send}</FieldError>
       </div>
     </form>
