@@ -206,11 +206,11 @@ export const content = {
       message: "Mensaje",
       messagePh: "Qué necesita y cuándo vence, si hay un plazo.",
       gdpr: "He leído la política de privacidad y acepto que Avenya use estos datos para responder a mi solicitud.",
-      submit: "Enviar solicitud",
-      sending: "Enviando…",
-      successTitle: "Solicitud recibida.",
+      submit: "Enviar por WhatsApp",
+      sending: "Abriendo WhatsApp…",
+      successTitle: "Mensaje listo en WhatsApp.",
       successBody:
-        "Le responderemos al correo indicado en un día laborable. Si el asunto es un vencimiento inmediato, menciónelo de nuevo al responder nuestro primer mensaje.",
+        "Se ha abierto WhatsApp con el texto que ha escrito. Pulse enviar para que nos llegue.",
       another: "Enviar otra solicitud",
       errors: {
         name: "Indique su nombre.",
@@ -501,11 +501,11 @@ export const content = {
       message: "Сообщение",
       messagePh: "Что нужно сделать и какой срок, если он уже близко.",
       gdpr: "Я ознакомился с политикой конфиденциальности и согласен на обработку этих данных, чтобы Avenya ответила на запрос.",
-      submit: "Отправить запрос",
-      sending: "Отправляем…",
-      successTitle: "Запрос получен.",
+      submit: "Отправить в WhatsApp",
+      sending: "Открываем WhatsApp…",
+      successTitle: "Сообщение готово в WhatsApp.",
       successBody:
-        "Ответим на указанную почту в рабочий день. Если срок подачи уже близко, повторите это в ответ на наше первое письмо.",
+        "Открылся WhatsApp с текстом, который вы написали. Нажмите «Отправить», чтобы оно дошло до нас.",
       another: "Отправить ещё один запрос",
       errors: {
         name: "Укажите имя.",
@@ -796,11 +796,11 @@ export const content = {
       message: "Повідомлення",
       messagePh: "Що потрібно зробити і який строк, якщо він уже близько.",
       gdpr: "Я ознайомився з політикою конфіденційності і погоджуюся на обробку цих даних, щоб Avenya відповіла на запит.",
-      submit: "Надіслати запит",
-      sending: "Надсилаємо…",
-      successTitle: "Запит отримано.",
+      submit: "Надіслати в WhatsApp",
+      sending: "Відкриваємо WhatsApp…",
+      successTitle: "Повідомлення готове в WhatsApp.",
       successBody:
-        "Відповімо на вказану пошту в робочий день. Якщо строк подання вже близько, повторіть це у відповідь на наш перший лист.",
+        "Відкрився WhatsApp з текстом, який ви написали. Натисніть «Надіслати», щоб воно дійшло до нас.",
       another: "Надіслати ще один запит",
       errors: {
         name: "Вкажіть ім’я.",
