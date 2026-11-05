@@ -51,21 +51,32 @@ export function ContactForm() {
   const [mailFailed, setMailFailed] = useState(false);
   const [done, setDone] = useState(false);
 
-  function validate(): Errors {
-    const next: Errors = {};
-    if (!name.trim()) next.name = c.errors.name;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) next.email = c.errors.email;
-    if (message.trim().length < 8) next.message = c.errors.message;
-    if (!gdpr) next.gdpr = c.errors.gdpr;
-    return next;
-  }
-
-  async function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const next = validate();
+    const data = new FormData(e.currentTarget);
+    const nextName = String(data.get("name") ?? "");
+    const nextEmail = String(data.get("email") ?? "");
+    const nextPhone = String(data.get("phone") ?? "");
+    const nextProfile = (String(data.get("profile") || "autonomo") as Profile) || "autonomo";
+    const nextMessage = String(data.get("message") ?? "");
+    const nextGdpr = data.get("gdpr") === "on";
+    const nextHoney = String(data.get("_gotcha") ?? "");
+    setName(nextName);
+    setEmail(nextEmail);
+    setPhone(nextPhone);
+    setProfile(nextProfile);
+    setMessage(nextMessage);
+    setGdpr(nextGdpr);
+    setHoney(nextHoney);
+
+    const next: Errors = {};
+    if (!nextName.trim()) next.name = c.errors.name;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nextEmail.trim())) next.email = c.errors.email;
+    if (nextMessage.trim().length < 8) next.message = c.errors.message;
+    if (!nextGdpr) next.gdpr = c.errors.gdpr;
     setErrors(next);
     if (Object.keys(next).length) return;
-    if (honey) {
+    if (nextHoney) {
       setDone(true);
       return;
     }
@@ -76,12 +87,12 @@ export function ContactForm() {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
         body: new URLSearchParams({
-          name: name.trim(),
-          email: email.trim(),
-          phone: phone.trim(),
-          profile: PROFILE_ES[profile],
-          message: message.trim(),
-          _subject: `Consulta web — ${PROFILE_ES[profile]} — ${name.trim()}`,
+          name: nextName.trim(),
+          email: nextEmail.trim(),
+          phone: nextPhone.trim(),
+          profile: PROFILE_ES[nextProfile] ?? PROFILE_ES.autonomo,
+          message: nextMessage.trim(),
+          _subject: `Consulta web — ${PROFILE_ES[nextProfile] ?? "Consulta"} — ${nextName.trim()}`,
           _gotcha: "",
         }),
       });
@@ -215,6 +226,7 @@ export function ContactForm() {
       <label className="flex items-start gap-3 text-sm leading-relaxed text-ink-soft">
         <input
           type="checkbox"
+          name="gdpr"
           className="mt-1 size-4 shrink-0 accent-forest"
           checked={gdpr}
           onChange={(e) => setGdpr(e.target.checked)}
