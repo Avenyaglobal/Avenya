@@ -45,7 +45,6 @@ export function ContactForm() {
   const [profile, setProfile] = useState<Profile>("autonomo");
   const [message, setMessage] = useState("");
   const [gdpr, setGdpr] = useState(false);
-  const [honey, setHoney] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [sending, setSending] = useState(false);
   const [mailFailed, setMailFailed] = useState(false);
@@ -60,14 +59,12 @@ export function ContactForm() {
     const nextProfile = (String(data.get("profile") || "autonomo") as Profile) || "autonomo";
     const nextMessage = String(data.get("message") ?? "");
     const nextGdpr = data.get("gdpr") === "on";
-    const nextHoney = String(data.get("_gotcha") ?? "");
     setName(nextName);
     setEmail(nextEmail);
     setPhone(nextPhone);
     setProfile(nextProfile);
     setMessage(nextMessage);
     setGdpr(nextGdpr);
-    setHoney(nextHoney);
 
     const next: Errors = {};
     if (!nextName.trim()) next.name = c.errors.name;
@@ -76,10 +73,6 @@ export function ContactForm() {
     if (!nextGdpr) next.gdpr = c.errors.gdpr;
     setErrors(next);
     if (Object.keys(next).length) return;
-    if (nextHoney) {
-      setDone(true);
-      return;
-    }
     setSending(true);
     setMailFailed(false);
     try {
@@ -146,16 +139,6 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
-      <input
-        type="text"
-        name="_gotcha"
-        value={honey}
-        onChange={(event) => setHoney(event.target.value)}
-        className="hidden"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden="true"
-      />
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">{c.name}</Label>
