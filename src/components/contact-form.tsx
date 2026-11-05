@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { FieldError, Input, Label, Select, Textarea } from "@/components/ui/field";
 import { useI18n } from "@/lib/i18n";
@@ -39,12 +39,9 @@ function whatsappText(input: {
 export function ContactForm() {
   const { t, href } = useI18n();
   const c = t.contact;
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [profile, setProfile] = useState<Profile>("autonomo");
-  const [message, setMessage] = useState("");
-  const [gdpr, setGdpr] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [profileLabel, setProfileLabel] = useState(PROFILE_ES.autonomo);
+  const [draft, setDraft] = useState({ name: "", email: "", phone: "", message: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [sending, setSending] = useState(false);
   const [mailFailed, setMailFailed] = useState(false);
@@ -52,19 +49,24 @@ export function ContactForm() {
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && form.contains(active)) active.blur();
+    const data = new FormData(form);
     const nextName = String(data.get("name") ?? "");
     const nextEmail = String(data.get("email") ?? "");
     const nextPhone = String(data.get("phone") ?? "");
     const nextProfile = (String(data.get("profile") || "autonomo") as Profile) || "autonomo";
     const nextMessage = String(data.get("message") ?? "");
     const nextGdpr = data.get("gdpr") === "on";
-    setName(nextName);
-    setEmail(nextEmail);
-    setPhone(nextPhone);
-    setProfile(nextProfile);
-    setMessage(nextMessage);
-    setGdpr(nextGdpr);
+    const situation = PROFILE_ES[nextProfile] ?? PROFILE_ES.autonomo;
+    setProfileLabel(situation);
+    setDraft({
+      name: nextName.trim(),
+      email: nextEmail.trim(),
+      phone: nextPhone.trim(),
+      message: nextMessage.trim(),
+    });
 
     const next: Errors = {};
     if (!nextName.trim()) next.name = c.errors.name;
@@ -72,7 +74,10 @@ export function ContactForm() {
     if (nextMessage.trim().length < 8) next.message = c.errors.message;
     if (!nextGdpr) next.gdpr = c.errors.gdpr;
     setErrors(next);
-    if (Object.keys(next).length) return;
+    if (Object.keys(next).length) {
+      form.querySelector("[data-field-error]")?.scrollIntoView({ block: "center" });
+      return;
+    }
     setSending(true);
     setMailFailed(false);
     try {
@@ -83,9 +88,9 @@ export function ContactForm() {
           name: nextName.trim(),
           email: nextEmail.trim(),
           phone: nextPhone.trim(),
-          profile: PROFILE_ES[nextProfile] ?? PROFILE_ES.autonomo,
+          profile: situation,
           message: nextMessage.trim(),
-          _subject: `Consulta web — ${PROFILE_ES[nextProfile] ?? "Consulta"} — ${nextName.trim()}`,
+          _subject: `Consulta web — ${situation} — ${nextName.trim()}`,
           _gotcha: "",
         }),
       });
@@ -102,11 +107,11 @@ export function ContactForm() {
 
   const whatsappHref = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
     whatsappText({
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone.trim(),
-      profile: PROFILE_ES[profile],
-      message: message.trim(),
+      name: draft.name,
+      email: draft.email,
+      phone: draft.phone,
+      profile: profileLabel,
+      message: draft.message,
     }),
   )}`;
 
@@ -123,12 +128,9 @@ export function ContactForm() {
           type="button"
           onClick={() => {
             setDone(false);
-            setName("");
-            setEmail("");
-            setPhone("");
-            setMessage("");
-            setGdpr(false);
+            setDraft({ name: "", email: "", phone: "", message: "" });
             setErrors({});
+            formRef.current?.reset();
           }}
         >
           {c.another}
@@ -138,18 +140,11 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
+    <form ref={formRef} onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">{c.name}</Label>
-          <Input
-            id="name"
-            name="name"
-            autoComplete="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            aria-invalid={Boolean(errors.name)}
-          />
+          <Input id="name" name="name" autoComplete="name" aria-invalid={Boolean(errors.name)} />
           <FieldError>{errors.name}</FieldError>
         </div>
         <div className="flex flex-col gap-2">
@@ -159,8 +154,6 @@ export function ContactForm() {
             name="email"
             type="email"
             autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             aria-invalid={Boolean(errors.email)}
           />
           <FieldError>{errors.email}</FieldError>
@@ -169,23 +162,11 @@ export function ContactForm() {
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="phone">{c.phone}</Label>
-          <Input
-            id="phone"
-            name="phone"
-            type="tel"
-            autoComplete="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
+          <Input id="phone" name="phone" type="tel" autoComplete="tel" />
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="profile">{c.profile}</Label>
-          <Select
-            id="profile"
-            name="profile"
-            value={profile}
-            onChange={(e) => setProfile(e.target.value as Profile)}
-          >
+          <Select id="profile" name="profile" defaultValue="autonomo">
             <option value="autonomo">{c.profiles.autonomo}</option>
             <option value="particular">{c.profiles.particular}</option>
             <option value="sociedad">{c.profiles.sociedad}</option>
@@ -199,9 +180,7 @@ export function ContactForm() {
         <Textarea
           id="message"
           name="message"
-          value={message}
           placeholder={c.messagePh}
-          onChange={(e) => setMessage(e.target.value)}
           aria-invalid={Boolean(errors.message)}
         />
         <FieldError>{errors.message}</FieldError>
@@ -210,9 +189,7 @@ export function ContactForm() {
         <input
           type="checkbox"
           name="gdpr"
-          className="mt-1 size-4 shrink-0 accent-forest"
-          checked={gdpr}
-          onChange={(e) => setGdpr(e.target.checked)}
+          className="mt-0.5 size-6 shrink-0 accent-forest"
         />
         <span>
           {c.gdpr}{" "}
@@ -222,9 +199,19 @@ export function ContactForm() {
           .
         </span>
       </label>
-      <FieldError>{errors.gdpr}</FieldError>
+      {errors.gdpr || errors.send ? (
+        <p data-field-error className="rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-800">
+          {errors.gdpr || errors.send}
+        </p>
+      ) : null}
       <div>
-        <Button type="submit" size="lg" disabled={sending} className={cn("min-w-44")}>
+        <Button
+          type="submit"
+          size="lg"
+          disabled={sending}
+          className={cn("min-w-44")}
+          onMouseDown={(event) => event.preventDefault()}
+        >
           {sending ? c.sending : c.submit}
         </Button>
         {mailFailed ? (
@@ -234,7 +221,6 @@ export function ContactForm() {
             </a>
           </Button>
         ) : null}
-        <FieldError>{errors.send}</FieldError>
       </div>
     </form>
   );
