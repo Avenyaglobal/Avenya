@@ -53,5 +53,5 @@ export function Select({
 
 export function FieldError({ children }: { children?: string }) {
   if (!children) return null;
-  return <p className="text-sm text-forest-deep">{children}</p>;
+  return <p className="text-sm font-medium text-red-800">{children}</p>;
 }
