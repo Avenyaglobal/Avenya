@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { FieldError, Input, Label, Select, Textarea } from "@/components/ui/field";
+import { sendContact } from "@/lib/send-contact-fn";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +17,6 @@ const PROFILE_ES: Record<Profile, string> = {
   other: "Otra",
 };
 
-const EMAIL = "avenyaglobal@gmail.com";
 const WHATSAPP = "34695343196";
 
 function whatsappText(input: {
@@ -81,21 +81,15 @@ export function ContactForm() {
     setSending(true);
     setMailFailed(false);
     try {
-      const res = await fetch(`https://shipmyform.com/to/${EMAIL}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-        body: new URLSearchParams({
+      await sendContact({
+        data: {
           name: nextName.trim(),
           email: nextEmail.trim(),
           phone: nextPhone.trim(),
           profile: situation,
           message: nextMessage.trim(),
-          _subject: `Consulta web — ${situation} — ${nextName.trim()}`,
-          _gotcha: "",
-        }),
+        },
       });
-      const payload = (await res.json().catch(() => null)) as { ok?: boolean } | null;
-      if (!res.ok || payload?.ok === false) throw new Error("send");
       setDone(true);
     } catch {
       setMailFailed(true);
