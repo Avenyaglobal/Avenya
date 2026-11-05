@@ -45,6 +45,7 @@ export function ContactForm() {
   const [profile, setProfile] = useState<Profile>("autonomo");
   const [message, setMessage] = useState("");
   const [gdpr, setGdpr] = useState(false);
+  const [honey, setHoney] = useState("");
   const [errors, setErrors] = useState<Errors>({});
   const [sending, setSending] = useState(false);
   const [mailFailed, setMailFailed] = useState(false);
@@ -64,25 +65,28 @@ export function ContactForm() {
     const next = validate();
     setErrors(next);
     if (Object.keys(next).length) return;
+    if (honey) {
+      setDone(true);
+      return;
+    }
     setSending(true);
     setMailFailed(false);
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
+      const res = await fetch(`https://shipmyform.com/to/${EMAIL}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+        body: new URLSearchParams({
           name: name.trim(),
           email: email.trim(),
           phone: phone.trim(),
           profile: PROFILE_ES[profile],
           message: message.trim(),
           _subject: `Consulta web — ${PROFILE_ES[profile]} — ${name.trim()}`,
-          _template: "table",
-          _captcha: "false",
-          _replyto: email.trim(),
+          _gotcha: "",
         }),
       });
-      if (!res.ok) throw new Error("send");
+      const payload = (await res.json().catch(() => null)) as { ok?: boolean } | null;
+      if (!res.ok || payload?.ok === false) throw new Error("send");
       setDone(true);
     } catch {
       setMailFailed(true);
@@ -131,6 +135,16 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
+      <input
+        type="text"
+        name="_gotcha"
+        value={honey}
+        onChange={(event) => setHoney(event.target.value)}
+        className="hidden"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+      />
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">{c.name}</Label>
